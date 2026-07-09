@@ -2,25 +2,29 @@ import json
 import logging
 import shutil
 from pathlib import Path
-from typing import Dict, Set
+from typing import Dict, Set, List
+from tqdm import tqdm
 
 
-# Configure console logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+# Configure logging to show timestamp and message
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
 
 
-def build_target_mapping(hierarchy: dict, current_path: Path, mapping: Dict[str, Path]) -> Dict[str, Path]:
+def build_relative_mapping(hierarchy: dict, current_rel_path: Path, mapping: Dict[str, Path]) -> Dict[str, Path]:
     """
-    Recursively parses the JSON hierarchy to map unique filenames to their target folder paths.
+    Parses the JSON hierarchy to map unique filenames to their relative target folder paths.
     """
     for key, value in hierarchy.items():
         if key == "__files__":
             if isinstance(value, list):
                 for filename in value:
-                    mapping[filename] = current_path
+                    mapping[filename] = current_rel_path
         elif isinstance(value, dict):
-            # It's a subfolder, recurse deeper
-            build_target_mapping(value, current_path / key, mapping)
+            build_relative_mapping(value, current_rel_path / key, mapping)
     
     return mapping
 
@@ -30,74 +34,90 @@ def organize_notes(parent_dump_path: str, json_path: str, target_root_path: str)
     target_root = Path(target_root_path).resolve()
     json_file = Path(json_path).resolve()
 
+    logging.info("Step 1: Initializing and validating paths...")
+    
     if not parent_dir.exists():
-        logging.error(f"Parent directory not found: {parent_dir}")
-        return
-    if not json_file.exists():
-        logging.error(f"JSON configuration not found: {json_file}")
+        logging.error(f"FATAL: Parent directory not found: {parent_dir}")
         return
 
-    # Load JSON and build mapping
+    if not json_file.exists():
+        logging.error(f"FATAL: JSON configuration not found at {json_file}")
+        return
+
+    if not target_root.exists():
+        logging.info(f"Creating missing target root directory at {target_root}")
+        target_root.mkdir(parents=True, exist_ok=True)
+
+    logging.info("Step 2: Loading JSON hierarchy...")
     with open(json_file, 'r', encoding='utf-8') as f:
         hierarchy = json.load(f)
     
     expected_mapping: Dict[str, Path] = {}
-    build_target_mapping(hierarchy, target_root, expected_mapping)
+    build_relative_mapping(hierarchy, Path(""), expected_mapping)
     expected_files: Set[str] = set(expected_mapping.keys())
 
-    # Scan the dump directory for all files (ignoring directories)
-    found_files: Set[str] = set()
-    files_to_move = []
+    logging.info(f"---> Total files defined in Hierarchy (JSON): {len(expected_files)}")
 
-    for file_path in parent_dir.rglob("*"):
+    logging.info("Step 3: Scanning dump directory for files...")
+    all_items = list(parent_dir.rglob("*"))
+    files_to_move: List[Path] = []
+    found_files: Set[str] = set()
+
+    for file_path in tqdm(all_items, desc="Scanning Dump", unit="file"):
         if file_path.is_file():
-            # Exclude hidden macOS files like .DS_Store
             if file_path.name.startswith("."):
-                continue
+                continue # Skip hidden files
             
-            file_stem = file_path.stem
-            found_files.add(file_stem)
+            found_files.add(file_path.stem)
             files_to_move.append(file_path)
 
-    # 1. Find and log discrepancies
+    logging.info(f"---> Total valid files found in Dump: {len(files_to_move)}")
+
+    # Discrepancy checks
     missing_in_dump = expected_files - found_files
     missing_in_json = found_files - expected_files
 
     if missing_in_dump:
-        logging.warning(f"Files defined in JSON but missing in dump folders: {', '.join(missing_in_dump)}")
+        logging.warning(f"Missing in Dump (defined in JSON but not found): {len(missing_in_dump)} files.")
     if missing_in_json:
-        logging.warning(f"Files found in dump but missing from JSON configuration: {', '.join(missing_in_json)}")
+        logging.warning(f"Unmapped Files (in Dump but not in JSON): {len(missing_in_json)} files.")
 
-    # 2. Create target directories and move files
+    logging.info("Step 4: Creating type-based folders and moving files...")
     moved_count = 0
-    for file_path in files_to_move:
+
+    for file_path in tqdm(files_to_move, desc="Moving Files", unit="file"):
         file_stem = file_path.stem
+        file_ext = file_path.suffix.lower()
         
-        # Only move if the file is defined in the JSON
         if file_stem in expected_mapping:
-            destination_dir = expected_mapping[file_stem]
-            destination_dir.mkdir(parents=True, exist_ok=True)
+            if file_ext == ".pdf":
+                type_folder = "PDF Notes"
+            elif file_ext in [".note", ".ntb"]:
+                type_folder = "Notability Notes"
+            else:
+                type_folder = "Other Formats"
+
+            rel_path = expected_mapping[file_stem]
+            destination_dir = target_root / type_folder / rel_path
+            
+            if not destination_dir.exists():
+                destination_dir.mkdir(parents=True, exist_ok=True)
             
             destination_file = destination_dir / file_path.name
             
-            # Handle potential conflicts
             if destination_file.exists():
-                logging.warning(f"File already exists at destination, skipping: {destination_file}")
-                continue
+                destination_file.unlink()
                 
             shutil.move(str(file_path), str(destination_file))
             moved_count += 1
-        else:
-            # File is in dump but not in JSON (already logged above, but we leave it untouched)
-            pass
 
-    logging.info(f"Process complete. Successfully moved {moved_count} files.")
+    logging.info("Step 5: Organization complete!")
+    logging.info(f"Successfully moved and organized {moved_count} files out of {len(files_to_move)} total scanned files.")
 
 
 if __name__ == "__main__":
-    # Update these paths to match your local environment
-    PARENT_DUMP_DIR = "./Notes_Dump"      # The folder containing your pdf and ntb subfolders
-    JSON_CONFIG = "./hierarchy.json"      # Path to your constants file
-    ORGANIZED_OUTPUT = "./Organized_Notes" # Where the final structured folders will be created
+    PARENT_DUMP_DIR = "./Notes_Dump"      
+    JSON_CONFIG = "./hierarchy.json"      
+    ORGANIZED_OUTPUT = "./Organized_Notes" 
     
     organize_notes(PARENT_DUMP_DIR, JSON_CONFIG, ORGANIZED_OUTPUT)
