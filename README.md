@@ -81,5 +81,6 @@ python3 organizer.py
 5. **Moving:** It iterates through the files, determines the appropriate type-folder (`PDF_Notes` or `Notability_Notes`), constructs the final path, creates necessary subdirectories, and moves the files.
 
 ## ⚠️ Important Notes
+* 🚨 **CRITICAL: Unique File Names Required!** This script relies heavily on the file's base name (e.g., `Math_101`) to map it to the correct folder destination. Therefore, **every note must have a strictly unique name** across your entire dump. If you have multiple files with the exact same name, the script will overwrite them or route them incorrectly based on the JSON mapping.
 * **Destructive Move:** This script uses `shutil.move()`. It will physically move files out of your dump directory. If you want to keep the originals in the dump, modify the script to use `shutil.copy2()` instead.
 * **Unmapped Files:** Any files present in your dump directory that are *not* defined in `hierarchy.json` will be left untouched in the dump directory.
