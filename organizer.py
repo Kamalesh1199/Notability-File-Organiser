@@ -1,6 +1,7 @@
 import json
 import logging
 import shutil
+
 from pathlib import Path
 from typing import Dict, Set, List
 from tqdm import tqdm
@@ -116,8 +117,8 @@ def organize_notes(parent_dump_path: str, json_path: str, target_root_path: str)
 
 
 if __name__ == "__main__":
-    PARENT_DUMP_DIR = "./Notes_Dump"      
+    PARENT_DUMP_DIR = "/Users/kamalesh/Documents/Notability/Dump"      
     JSON_CONFIG = "./hierarchy.json"      
-    ORGANIZED_OUTPUT = "./Organized_Notes" 
+    ORGANIZED_OUTPUT = "/Users/kamalesh/Documents/Notability/Organised" 
     
     organize_notes(PARENT_DUMP_DIR, JSON_CONFIG, ORGANIZED_OUTPUT)

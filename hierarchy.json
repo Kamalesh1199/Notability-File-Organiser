@@ -1,31 +1,34 @@
 {
-    "University": {
+    "Welcome": {
         "__files__": [
-            "Orientation_Details"
-        ],
-        "Semester_1": {
-            "__files__": [
-                "Math_101",
-                "Physics_101"
-            ]
-        }
+            "Getting Started [1783911786]",
+            "Tools Guide [1783911806]"
+        ]
     },
-    "Work": {
+    "Practice": {
         "__files__": [
-            "Onboarding_Checklist",
-            "System_Architecture"
-        ],
-        "Meetings": {
-            "__files__": [
-                "Client_Sync_01",
-                "Team_Standup"
-            ]
-        }
+            "Testing 1",
+            "Testing",
+            "Note 20 Jun 2026",
+            "Note 3 Jul 2026",
+            "ISI MStat Syllabus"
+        ]
     },
-    "Personal": {
+    "IIT JAM - MS": {
         "__files__": [
-            "Daily_Journal",
-            "Expense_Tracker"
+            "IIT JAM MS - Syllabus [1783911670]",
+            "JAM2026 Brochure [1783911687]"
+        ]
+    },
+    "ISI MStat": {
+        "__files__": [
+            "ISI MStat - Syllabus [1783911733]",
+            "ISI Prospectus 2026-27 [1783911751]"
+        ]
+    },
+    "Learn Hindi": {
+        "__files__": [
+            "Hindi (Complete Practice) [1783911533]"
         ]
     }
 }
