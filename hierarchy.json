@@ -2,44 +2,20 @@
     "MStat Entrance Preparation": {
         "CMI MSc DS (Level 1)": {
             "1. Pre-Calculus & Algebra": {
-                "1. Sequence and Series": {
-                    "__files__": [
-                        "Notes [1786324028]",
-                        "Practice [1786192992]"
-                    ]
-                },
-                "2. Number Theory": {
-                    "__files__": [
-                        "Notes [1786413952]",
-                        "Practice [1786345595]"
-                    ]
-                },
-                "3. Quadratics & Polynomials": {
-                    "__files__": [
-                        "Notes [1786753075]",
-                        "Practice [1786595185]"
-                    ]
-                },
-                "4. Logarithms and Trigonometry": {
-                    "__files__": [
-                        "Notes [1786950311]",
-                        "Practice [1787270202]"
-                    ]
-                },
-                "5. Relations and Functions": {
-                    "__files__": [
-                        "Notes [1786948925]",
-                        "Practice [1786942958]"
-                    ]
-                }
+                "__files__": [
+                    "1. Sequence and Series - Notes [1786324028]",
+                    "2. Number Theory - Notes [1786413952]",
+                    "3. Quadratics and Polynomials - Notes [1786753075]",
+                    "4. Logarithms and Trigonometry - Notes [1786950311]",
+                    "5. Relations and Functions - Notes [1786948925]",
+                    "Pre-Calculus and Algebra - Practice [1786192992]"
+                ]
             },
             "2. Programming and Logic": {
-                "1. Mathematical Principles and Teasers": {
-                    "__files__": [
-                        "Notes [1787584319]",
-                        "Practice [1787578552]"
-                    ]
-                }
+                "__files__": [
+                    "1. Mathematical Principles and Teasers - Notes [1787584319]",
+                    "Programming and Logic - Practice [1787578552]"
+                ]
             }
         },
         "IIT JAM MS + ISI MStat (Level 2)": {
