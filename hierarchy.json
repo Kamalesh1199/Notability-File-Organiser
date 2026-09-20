@@ -1,4 +1,16 @@
 {
+    "IIT JAM MS": {
+        "Mathematical": {
+            "__files__": [
+                "0. Foundation (Set Theory, Point Set Topology) - Notes [1789862561]",
+                "1. Sequence and Series - Notes [1788331434]",
+                "2. Differential and Integral Calculus - Notes [1788872793]"
+            ]
+        },
+        "Statistics": {
+            "__files__": []
+        }
+    },
     "MStat Entrance Preparation": {
         "CMI MSc DS (Level 1)": {
             "1. Pre-Calculus & Algebra": {
